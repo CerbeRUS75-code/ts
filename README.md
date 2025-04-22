@@ -1,21 +1,5 @@
-Архитектура системы
-Компоненты системы
-AI-агент (NLP Processor)
-Отвечает за понимание запросов пользователей. Использует простую модель обработки естественного языка (NLP) на основе ключевых слов для определения интента запроса.
-Особенности: Легковесный и stateless, что позволяет запускать несколько экземпляров для параллельной обработки запросов.
-Масштабируемость: Подходит для горизонтального масштабирования с увеличением числа обработчиков.
-База данных (Knowledge Base)
-Хранит предопределенные ответы для каждого интента в виде структуры данных (например, map[Intent]string).
-Особенности: In-memory реализация с потокобезопасным доступом через механизмы вроде sync.RWMutex для параллельного чтения.
-Масштабируемость: Может быть заменена на внешнюю базу данных (например, PostgreSQL или Redis) для работы с большими объемами данных.
-Система очередей (Support Agent и AI Support System)
-Управляет обработкой запросов в реальном времени.
-Support Agent: Координирует запросы, направляя их либо к AI-агенту, либо к человеку через буферизованный канал (humanQueue, вместимостью 50 запросов).
-AI Support System: Управляет пулом воркеров (например, горутин в Go), которые обрабатывают запросы из канала (queries, вместимостью 100 запросов).
-Масштабируемость: Буферизованные каналы и пул воркеров обеспечивают конкурентную обработку множества запросов, а ограничение размера очередей предотвращает перегрузку.
-Обеспечение масштабируемости
-Использование конкурентных механизмов для параллельной обработки запросов.
-Ограничение размера очередей для управления нагрузкой.
-Возможность горизонтального масштабирования путем добавления воркеров или интеграции с балансировщиками нагрузки (например, Nginx или Kubernetes).
+System Architecture 
+
+System Components AI Agent (NLP Processor) Responsible for understanding user requests. Uses a simple keyword-based natural language processing (NLP) model to determine the intent of a request. Features: Lightweight and stateless, allowing multiple instances to be launched to process requests in parallel. Scalability: Suitable for horizontal scaling with increasing number of handlers. Knowledge Base: Stores predefined responses for each intent as a data structure (e.g. map[Intent]string). Features: In-memory implementation with thread-safe access via mechanisms like sync.RWMutex for parallel reading. Scalability: Can be replaced with an external database (for example, PostgreSQL or Redis) for working with large amounts of data. The queue system (Support Agent and AI Support System) Manages the processing of requests in real time. Support Agent: Coordinates requests by directing them either to an AI agent or to a human through a buffered channel (humanQueue, with a capacity of 50 requests). AI Support System: Manages a pool of workers (for example, goroutines in Go) that process requests from a channel (queries, with a capacity of 100 requests). Scalability: Buffered channels and a pool of workers ensure competitive processing of multiple requests, and queue size limits prevent congestion. Ensuring scalability By using competitive mechanisms for parallel query processing. Limit the size of queues for load management. The ability to scale horizontally by adding workers or integrating with load balancers (for example, Nginx or Kuber)
 
 
